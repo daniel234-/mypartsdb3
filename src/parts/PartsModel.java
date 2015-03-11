@@ -208,6 +208,11 @@ public class PartsModel {
 			System.out.println("Invalid name.");
 			return 1;
 		}
+		if (number.charAt(0) != 'P')
+		{
+			System.out.println("Part Number MUST start with a 'P'.");
+			return 1;
+		}
 		if (number.length() > 20) {
 			System.out.println("Number too long.");
 			return 1;
