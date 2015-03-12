@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.Scanner;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -188,11 +189,17 @@ public class ProdTempView extends JFrame {
 	}
 
 	public void fillIn(String prodTemp) {
+		this.copy = prodTemp;
+		Scanner scan = new Scanner(prodTemp);
+		scan.next(); // skip ID until implemented. will be changed
 
+		productNumText.setText(scan.next());
+		productDescText.setText(scan.next());
+		quantityText.setText(scan.next());
+		scan.close();
 	}
 
 	public int checkInput(int mode) {
-		System.out.println(productNumText.getText());
 		if (model.checkProdTemp(productNumText.getText(),
 				productDescText.getText(), quantityText.getText(), mode) == 1) {
 			return 1;
@@ -201,35 +208,47 @@ public class ProdTempView extends JFrame {
 			model.addProdTemp(productNumText.getText(),
 					productDescText.getText(), quantityText.getText());
 		}
-		
+		if (mode == 2) {
+			Scanner scan = new Scanner(this.copy);
+			// again ID needs to be implemented
+			scan.next();
+			String copyProdNum = scan.next();
+			String copyDesc = scan.next();
+			String copyQuantity = scan.next();
+			scan.close();
+
+			int check = model.editTemplate(productNumText.getText(),
+					productDescText.getText(), quantityText.getText(),
+					copyProdNum, copyDesc, copyQuantity);
+			if (check == 0){
+				model.addProdTemp(productNumText.getText(), productDescText.getText(), quantityText.getText());
+			}
+		}
 		this.fieldCleanUp();
 		return 0;
 	}
-	
-	public void refreshList(){
+
+	public void refreshList() {
 		listModel.clear();
-		for(int n = 0; n < 12; n++)
-		{
+		for (int n = 0; n < 12; n++) {
 			String text = model.refreshProdTempList(n);
-			if(text.equalsIgnoreCase(" "))
-			{
+			if (text.equalsIgnoreCase(" ")) {
 				n = 12;
-			}
-			else
-			{
-				System.out.println(text);
+			} else {
 				listModel.addElement(text);
 			}
 		}
 	}
-	
-	public void registerListeners(PartsButtonController pbc){
+
+	public void registerListeners(PartsButtonController pbc,
+			TemplateListController tlc) {
 		addButton.addActionListener(pbc);
 		editButton.addActionListener(pbc);
 		deleteButton.addActionListener(pbc);
+		prodTempList.addListSelectionListener(tlc);
 	}
 
-	public JList getProdTemplate() {
+	public JList getProdTemplateList() {
 		return this.prodTempList;
 	}
 

@@ -271,6 +271,7 @@ public class PartsModel {
 
 	public int editItem(String id, String partname, String amount,
 			String copyid, String copypartname, String copyamount) {
+		System.out.println(partname + copypartname + amount + copyamount);
 		for (int e = 0; e < itemArray.length; e++) {
 			if (itemArray[e][1].equalsIgnoreCase(partname)
 					&& !partname.equalsIgnoreCase(copypartname)) {
@@ -376,19 +377,19 @@ public class PartsModel {
 		return 0;
 	}
 
-	public String refreshProdTempList(int n){
-		if(prodTempArray[n][1] == null){
+	public String refreshProdTempList(int n) {
+		if (prodTempArray[n][1] == null) {
 			return " ";
-		} else{
+		} else {
 			text = (prodTempArray[n][0] + ", " + prodTempArray[n][1] + ","
-					+prodTempArray[n][2] + ", " + prodTempArray[n][3]);
+					+ prodTempArray[n][2] + ", " + prodTempArray[n][3]);
 			return this.text;
 		}
 	}
-	
-	public void addProdTemp(String prodNum, String prodDesc, String amount){
-		for(int a = 0; a < prodTempArray.length; a++){
-			if(prodTempArray[a][1] == null){
+
+	public void addProdTemp(String prodNum, String prodDesc, String amount) {
+		for (int a = 0; a < prodTempArray.length; a++) {
+			if (prodTempArray[a][1] == null) {
 				prodTempArray[a][1] = prodNum;
 				prodTempArray[a][2] = prodDesc;
 				prodTempArray[a][3] = amount;
@@ -397,31 +398,87 @@ public class PartsModel {
 			}
 		}
 	}
+
+	public int editTemplate(String prodNum, String prodDesc, String quantity,
+			String copyProdNum, String copyprodDesc, String copyQuantity) {
+		for (int i = 0; i < prodTempArray.length; i++) {
+			if (prodTempArray[i][2].equalsIgnoreCase(prodDesc)
+					&& !prodDesc.equalsIgnoreCase(copyprodDesc)) {
+				return 1;
+			}
+			if (prodTempArray[i][1].equalsIgnoreCase(copyProdNum)
+					&& prodTempArray[i][2].equalsIgnoreCase(copyprodDesc)
+					&& prodTempArray[i][3].equalsIgnoreCase(copyQuantity)) {
+				prodTempArray[i][1] = prodNum;
+				prodTempArray[i][2] = prodDesc;
+				prodTempArray[i][3] = quantity;
+				return 1;
+			}
+		}
+		return 0;
+	}
 	
-	public int checkProdTemp(String prodNum, String prodDesc , String amount, int mode){
-		//TODO
+	public void deleteTemplate(String template){
 		int found = 0;
-		if(prodNum.length() > 20  || prodNum == null || prodNum.equals("")){
+		Scanner scan = new Scanner(template);
+		scan.next();
+		text = scan.next();
+		scan.close();
+		for (int i = 0; i < prodTempArray.length; i++){
+			if(found == 1 && i == prodTempArray.length - 1){
+				prodTempArray[i][1] = null;
+				prodTempArray[i][2] = null;
+				prodTempArray[i][3] = null;
+			} else if (found == 1 && i < prodTempArray.length - 1){
+				prodTempArray[i][1] =  prodTempArray[i+1][1];
+				prodTempArray[i][2] = prodTempArray[i+1][2];
+				prodTempArray[i][3] = prodTempArray[i+1][3];
+			} else if (prodTempArray[i][1].equalsIgnoreCase(text)){
+				found = 1;
+				prodTempArray[i][1] =  prodTempArray[i+1][1];
+				prodTempArray[i][2] = prodTempArray[i+1][2];
+				prodTempArray[i][3] = prodTempArray[i+1][3];
+			}
+		}
+	}
+	
+	public int checkProdTemp(String prodNum, String prodDesc, String amount,
+			int mode) {
+		// TODO
+		int found = 0;
+		if (prodNum.length() > 20 || prodNum == null || prodNum.equals("")) {
 			System.out.println("Invalid Product Number: " + prodNum);
 			return 1;
 		}
-		if(prodDesc.length() > 255 || prodNum == null || prodDesc.charAt(0) != 'A'){
+		if (prodDesc.length() > 255 || prodNum == null
+				|| prodDesc.charAt(0) != 'A') {
 			System.out.println("Invalid Product Description");
 			return 1;
 		}
-		for(int i = 0;  i < prodTempArray.length; i++){
-			if(prodDesc.equalsIgnoreCase(prodTempArray[i][2])){
+		for (int i = 0; i < prodTempArray.length; i++) {
+			if (prodDesc.equalsIgnoreCase(prodTempArray[i][2])) {
 				System.out.println("Product Description must be unique");
 				return 1;
 			}
 		}
-		if(this.checkNumber(amount, mode) == 1){
+		if (this.checkNumber(amount, mode) == 1) {
 			System.out.println("Amount too low");
 			return 1;
 		}
 		return 0;
 	}
-	
+
+	public String getProdTemp(int index) {
+		for (int i = 0; i < prodTempArray.length; i++) {
+			if (i == index) {
+				String retString;
+				return retString = (prodTempArray[i][0] + " "
+						+ prodTempArray[i][1] + " " + prodTempArray[i][2] + " " + prodTempArray[i][3]);
+			}
+		}
+		return "N/A";
+	}
+
 	public String getUnitPart() {
 		return this.unitPart;
 	}

@@ -26,10 +26,10 @@ public class ChooseView extends JFrame {
 
 	public void registerViewListeners(PartsButtonController pbc,
 			PartsListController plc, PartsUnitPartController puc,
-			InventoryListController ilc, PartsLocationController ploc) {
+			InventoryListController ilc, PartsLocationController ploc, TemplateListController tlc) {
 		partView.registerListeners(pbc, plc, puc);
 		invView.registerListeners(pbc, ilc, ploc);
-		prodTempView.registerListeners(pbc);
+		prodTempView.registerListeners(pbc, tlc);
 	}
 	
 	public InventoryView getInvView(){

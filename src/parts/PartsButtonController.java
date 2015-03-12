@@ -67,9 +67,16 @@ public class PartsButtonController implements ActionListener
 		}
 		if(command.equals("Edit Template")){
 			//TODO
+			view3.checkInput(2);
+			view3.refreshList();
 		}
 		if(command.equals("Delete Template")){
 			//TODO
+			list = view3.getProdTemplateList();
+			String delete = model.getProdTemp(list.getSelectedIndex());
+			model.deleteTemplate(delete);
+			view3.fieldCleanUp();
+			view3.refreshList();
 		}
 	}
 }
