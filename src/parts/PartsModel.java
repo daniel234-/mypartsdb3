@@ -7,6 +7,7 @@ public class PartsModel {
 	private int width, height;
 	private String[][] partArray = new String[12][6];
 	private String[][] itemArray = new String[12][4];
+	private String[][] prodTempArray = new String[12][4];
 	private String text = "";
 	private int mode = 0;
 	private String unitPart = "";
@@ -375,6 +376,52 @@ public class PartsModel {
 		return 0;
 	}
 
+	public String refreshProdTempList(int n){
+		if(prodTempArray[n][1] == null){
+			return " ";
+		} else{
+			text = (prodTempArray[n][0] + ", " + prodTempArray[n][1] + ","
+					+prodTempArray[n][2] + ", " + prodTempArray[n][3]);
+			return this.text;
+		}
+	}
+	
+	public void addProdTemp(String prodNum, String prodDesc, String amount){
+		for(int a = 0; a < prodTempArray.length; a++){
+			if(prodTempArray[a][1] == null){
+				prodTempArray[a][1] = prodNum;
+				prodTempArray[a][2] = prodDesc;
+				prodTempArray[a][3] = amount;
+				a = prodTempArray.length;
+				continue;
+			}
+		}
+	}
+	
+	public int checkProdTemp(String prodNum, String prodDesc , String amount, int mode){
+		//TODO
+		int found = 0;
+		if(prodNum.length() > 20  || prodNum == null || prodNum.equals("")){
+			System.out.println("Invalid Product Number: " + prodNum);
+			return 1;
+		}
+		if(prodDesc.length() > 255 || prodNum == null || prodDesc.charAt(0) != 'A'){
+			System.out.println("Invalid Product Description");
+			return 1;
+		}
+		for(int i = 0;  i < prodTempArray.length; i++){
+			if(prodDesc.equalsIgnoreCase(prodTempArray[i][2])){
+				System.out.println("Product Description must be unique");
+				return 1;
+			}
+		}
+		if(this.checkNumber(amount, mode) == 1){
+			System.out.println("Amount too low");
+			return 1;
+		}
+		return 0;
+	}
+	
 	public String getUnitPart() {
 		return this.unitPart;
 	}

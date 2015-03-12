@@ -15,7 +15,7 @@ public class ChooseView extends JFrame {
 
 		invView = new InventoryView(otherModel);
 		partView = new PartsView(otherModel);
-		prodTempView = new ProdTempView();
+		prodTempView = new ProdTempView(otherModel);
 		
 		tabPane.addTab("View Inventory", invView.getInvPanel());
 		tabPane.addTab("View Parts", partView.getPartPanel());
@@ -29,6 +29,7 @@ public class ChooseView extends JFrame {
 			InventoryListController ilc, PartsLocationController ploc) {
 		partView.registerListeners(pbc, plc, puc);
 		invView.registerListeners(pbc, ilc, ploc);
+		prodTempView.registerListeners(pbc);
 	}
 	
 	public InventoryView getInvView(){
@@ -39,6 +40,8 @@ public class ChooseView extends JFrame {
 		return partView;
 	}
 	
-	
+	public ProdTempView getProdTempView(){
+		return prodTempView;
+	}
 
 }
