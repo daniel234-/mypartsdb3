@@ -29,7 +29,8 @@ public class Parts
 		InventoryListController controller3 = new InventoryListController(chView.getInvView(), model);
 		PartsUnitPartController controller4 = new PartsUnitPartController(model);
 		PartsLocationController controller5 = new PartsLocationController(model);
-		chView.registerViewListeners(controller1, controller2, controller4, controller3, controller5);
+		TemplateListController tempListCont = new TemplateListController(chView.getProdTempView(), model);
+		chView.registerViewListeners(controller1, controller2, controller4, controller3, controller5, tempListCont);
 		
 		chView.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		chView.setSize(600, 600);
