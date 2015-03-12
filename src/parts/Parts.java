@@ -24,7 +24,7 @@ public class Parts
 		ChooseView chView = new ChooseView(model);
 		//PartsView view = new PartsView(model);
 		//InventoryView view2 = new InventoryView(model);
-		PartsButtonController controller1 = new PartsButtonController(chView.getPartsView(), chView.getInvView(), model);
+		PartsButtonController controller1 = new PartsButtonController(chView.getPartsView(), chView.getInvView(), chView.getProdTempView(), model);
 		PartsListController controller2 = new PartsListController(chView.getPartsView(), model);
 		InventoryListController controller3 = new InventoryListController(chView.getInvView(), model);
 		PartsUnitPartController controller4 = new PartsUnitPartController(model);
