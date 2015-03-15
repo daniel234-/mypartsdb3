@@ -10,13 +10,15 @@ public class PartsButtonController implements ActionListener
 	private PartsModel model;
 	private PartsView view;
 	private InventoryView view2;
+	private ProdTempView view3;
 	private JList list;
 	
-	public PartsButtonController(PartsView view, InventoryView view2, PartsModel model)
+	public PartsButtonController(PartsView view, InventoryView view2, ProdTempView otherview3, PartsModel model)
 	{
 		this.model = model;
 		this.view = view;
 		this.view2 = view2;
+		this.view3 = otherview3;
 	}
 
 	public void actionPerformed(ActionEvent e) 
@@ -58,14 +60,23 @@ public class PartsButtonController implements ActionListener
 			view2.fieldCleanUp();
 			view2.refreshList();
 		}
-		if(command.equals("Add Product Template")){
+		if(command.equals("Add Template")){
 			//TODO
+			view3.checkInput(1);
+			view3.refreshList();
 		}
-		if(command.equals("Edit Product Template")){
+		if(command.equals("Edit Template")){
 			//TODO
+			view3.checkInput(2);
+			view3.refreshList();
 		}
-		if(command.equals("Delete Product Template")){
+		if(command.equals("Delete Template")){
 			//TODO
+			list = view3.getProdTemplateList();
+			String delete = model.getProdTemp(list.getSelectedIndex());
+			model.deleteTemplate(delete);
+			view3.fieldCleanUp();
+			view3.refreshList();
 		}
 	}
 }
