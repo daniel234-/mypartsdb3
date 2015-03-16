@@ -265,3 +265,4 @@ public class ProdTempView extends JFrame {
 	}
 
 }
+>>>>>>> DanielBranch

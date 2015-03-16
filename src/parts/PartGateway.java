@@ -5,6 +5,7 @@ public interface PartGateway
 	public void loadInventory();
 	public void loadParts();
 	public int nextRow();
+	public void prepareItemRow(int itemid);
 	public void addItemRow(String text1, String text2, String text3);
 	public void updateItemRow(int number, String text1, String text2, String text3);
 	public void deleteItemRow(int number);

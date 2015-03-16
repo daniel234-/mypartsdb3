@@ -31,6 +31,9 @@ public class PartGatewaySQL implements PartGateway
 	+ "part_number = ?, part_name = ?, vendor_name = ?, unit_of_quantity = ?, external_part_number = ? "
 			+ "WHERE id_number = ?";
 	private String deletePartRow = "DELETE FROM part_table WHERE id_number = ?";
+	private String prepareItemRow = "SELECT part_name, location_name, quantity "
+	+ "FROM inventory_table "
+			+ "WHERE id_number = ? FOR UPDATE ";
 	
 	public PartGatewaySQL()
 	{
@@ -113,6 +116,26 @@ public class PartGatewaySQL implements PartGateway
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return 1;
+		}
+	}
+	
+	public void prepareItemRow(int itemid)
+	{
+		int dbid = 13;
+		while (itemid != dbid)
+		{
+			try {
+				sRS = conn.prepareStatement(prepareItemRow);
+				rs = sRS.executeQuery();
+				rs.first();	
+				dbid = rs.getInt("id_number");
+				System.out.println(dbid);
+				if(rs != null)
+					rs.close();
+				sRS.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

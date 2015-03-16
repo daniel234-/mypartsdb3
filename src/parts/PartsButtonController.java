@@ -80,3 +80,4 @@ public class PartsButtonController implements ActionListener
 		}
 	}
 }
+>>>>>>> DanielBranch
