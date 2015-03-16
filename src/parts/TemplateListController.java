@@ -18,11 +18,13 @@ public class TemplateListController implements ListSelectionListener {
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		// TODO Auto-generated method stub
+		//System.out.println("in value changed");
 		list = view.getProdTemplateList();
 		String s = model.getProdTemp(list.getSelectedIndex());
 		if(s.equalsIgnoreCase("N/A")){
 			// nothing
 		} else{
+			//System.out.println(s);
 			view.fillIn(s);
 		}
 	}

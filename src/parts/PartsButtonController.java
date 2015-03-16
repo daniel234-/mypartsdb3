@@ -11,9 +11,11 @@ public class PartsButtonController implements ActionListener
 	private PartsView view;
 	private InventoryView view2;
 	private ProdTempView view3;
+	private ProdTempDetailView view4;
 	private JList list;
 	
-	public PartsButtonController(PartsView view, InventoryView view2, ProdTempView otherview3, PartsModel model)
+	public PartsButtonController(PartsView view, InventoryView view2, ProdTempView otherview3, 
+			ProdTempDetailView otherview4, PartsModel model)
 	{
 		this.model = model;
 		this.view = view;
@@ -77,6 +79,23 @@ public class PartsButtonController implements ActionListener
 			model.deleteTemplate(delete);
 			view3.fieldCleanUp();
 			view3.refreshList();
+		}
+		if(command.equals("Add Template Detail")){
+			//TODO
+			view4.checkInput(1);
+			view4.refreshList();
+		}
+		if(command.equals("Edit Template Detail")){
+			//TODO
+			view4.checkInput(2);
+			view4.refreshList();
+		}
+		if(command.equals("Delete Template Detail")){
+			//TODO
+			list = view4.getProdDetailList();
+			String delete = model.getProdDetail(list.getSelectedIndex());
+			view4.fieldCleanUp();
+			view4.refreshList();
 		}
 	}
 }
