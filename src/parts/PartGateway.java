@@ -11,6 +11,8 @@ public interface PartGateway
 	public void addPartRow(String text1, String text2, String text3, String text4, String text5);
 	public void updatePartRow(int number, String text1, String text2, String text3, String text4, String text5);
 	public void deletePartRow(int number);
+	public void addProdTempRow(String text1, String text2);
+	//public void updateProdTempRow(String text1, String text2);
 	public String getItemID();
 	public String getPart();
 	public String getLocation();

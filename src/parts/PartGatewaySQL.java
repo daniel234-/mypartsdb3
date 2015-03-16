@@ -31,6 +31,12 @@ public class PartGatewaySQL implements PartGateway
 	+ "part_number = ?, part_name = ?, vendor_name = ?, unit_of_quantity = ?, external_part_number = ? "
 			+ "WHERE id_number = ?";
 	private String deletePartRow = "DELETE FROM part_table WHERE id_number = ?";
+	private String insertProdTempRow = "INSERT INTO product_table"
+			+ "(product_number, product_description) VALUES"
+			+ "(?, ?)";
+	private String editProdTempRow = "UPDATE product_table SET "
+			+ "product_number = ?, product_description = ? "
+			+ "WHERE id = ?";
 	
 	public PartGatewaySQL()
 	{
@@ -145,6 +151,7 @@ public class PartGatewaySQL implements PartGateway
 		}
 	}
 	
+	
 	public void deleteItemRow(int partid)
 	{
 		try {
@@ -198,6 +205,18 @@ public class PartGatewaySQL implements PartGateway
 			sRS.executeUpdate();
 			sRS.close();
 		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void addProdTempRow(String partNum, String partDesc){
+		try{
+			sRS = conn.prepareStatement(insertProdTempRow);
+			sRS.setString(1, partNum);
+			sRS.setString(2, partDesc);
+			sRS.executeUpdate();
+			sRS.close();
+		} catch(SQLException e){
 			e.printStackTrace();
 		}
 	}
