@@ -37,6 +37,9 @@ public class PartGatewaySQL implements PartGateway
 	private String editProdTempRow = "UPDATE product_table SET "
 			+ "product_number = ?, product_description = ? "
 			+ "WHERE id = ?";
+	private String prepareItemRow = "SELECT part_name, location_name, quantity "
+	+ "FROM inventory_table "
+			+ "WHERE id_number = ? FOR UPDATE ";
 	
 	public PartGatewaySQL()
 	{
@@ -148,6 +151,27 @@ public class PartGatewaySQL implements PartGateway
 			sRS.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}
+	}
+	
+
+	public void prepareItemRow(int itemid)
+	{
+		int dbid = 13;
+		while (itemid != dbid)
+		{
+			try {
+				sRS = conn.prepareStatement(prepareItemRow);
+				rs = sRS.executeQuery();
+				rs.first();	
+				dbid = rs.getInt("id_number");
+				System.out.println(dbid);
+				if(rs != null)
+					rs.close();
+				sRS.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

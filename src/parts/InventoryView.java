@@ -189,7 +189,9 @@ public class InventoryView
 		this.copy = part;
 		Scanner scan = new Scanner(part);
 		
-		field3.setText(scan.next());
+		int itemid = Integer.parseInt(scan.next());
+		model.prepareItem(itemid);
+		field3.setText("" + itemid);
 		field5.setText(scan.next());
 		
 		scan.next();

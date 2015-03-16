@@ -222,6 +222,11 @@ public class PartsModel {
 			System.out.println("External number too long.");
 			return 1;
 		}
+		if (number.charAt(0) != 'P')
+		{
+			System.out.println("Number must start with a P.");
+			return 1;
+		}
 		return 0;
 	}
 
@@ -256,6 +261,11 @@ public class PartsModel {
 						.println("Similar part name/location found, add failed.");
 			}
 		}
+	}
+	
+	public void prepareItem(int itemid)
+	{
+		pdg.prepareItemRow(itemid);
 	}
 
 	public String getItem(int index) {
