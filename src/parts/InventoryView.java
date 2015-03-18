@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.sql.Timestamp;
 import java.util.Scanner;
 
 import javax.swing.BorderFactory;
@@ -32,16 +33,15 @@ public class InventoryView
 	private Font bigFont = new Font("Serif", Font.PLAIN, 20);
 	private String[] locations = {"Facility 1 Warehouse 1", "Facility 1 Warehouse 2", "Facility 2","Unknown"};
 	private JComboBox locationList = new JComboBox(locations);
+	private Timestamp time = null;
 	
 	public InventoryView(PartsModel model)
 	{
-		//super("Inventory System");
 		this.model = model;
 		mainPanel = new JPanel();
 		inventoryLayout = new GridBagLayout();
 		GridBagConstraints g = new GridBagConstraints();
 		mainPanel.setLayout(inventoryLayout);
-		//this.setLayout(inventoryLayout);
 		Font bigFont = new Font("Serif", Font.PLAIN, 20); 
 		
 		listModel = new DefaultListModel();
@@ -55,7 +55,6 @@ public class InventoryView
 		g.weighty = 0.95;
 		g.gridwidth = 3;
 		mainPanel.add(inventoryList, g);
-		//this.add(inventoryList,g);
 		
 		addButton = new JButton("Add Item");
 		addButton.setFont(bigFont);
@@ -66,7 +65,6 @@ public class InventoryView
 		g.weighty = 0.05;
 		g.anchor = GridBagConstraints.LAST_LINE_START;
 		mainPanel.add(addButton, g);
-		//this.add(addButton,g);
 		
 		editButton = new JButton("Edit Item");
 		editButton.setFont(bigFont);
@@ -77,7 +75,6 @@ public class InventoryView
 		g.weighty = 0.05;
 		g.anchor = GridBagConstraints.PAGE_END;
 		mainPanel.add(editButton, g);
-		//this.add(editButton,g);
 		
 		deleteButton = new JButton("Delete Item");
 		deleteButton.setFont(bigFont);
@@ -88,7 +85,6 @@ public class InventoryView
 		g.weighty = 0.05;
 		g.anchor = GridBagConstraints.LAST_LINE_END;
 		mainPanel.add(deleteButton, g);
-		//this.add(deleteButton,g);
 		
 		//Panel contents
 		JPanel panel = new JPanel(inventoryLayout);
@@ -99,7 +95,6 @@ public class InventoryView
 		g.ipadx = 130;
 		g.anchor = GridBagConstraints.PAGE_END;
 		mainPanel.add(panel, g);
-		//this.add(panel,g);
 		
 		field1 = new JTextField("Item Information",29);
 		field1.setHorizontalAlignment(JTextField.CENTER);
@@ -108,7 +103,6 @@ public class InventoryView
 		g.gridx = 0;
 		g.gridy = 0;
 		g.gridwidth = 4;
-		//g.anchor = GridBagConstraints.PAGE_END;
 		panel.add(field1,g);
 		
 		field2 = new JTextField("         Item ID:");
@@ -190,7 +184,7 @@ public class InventoryView
 		Scanner scan = new Scanner(part);
 		
 		int itemid = Integer.parseInt(scan.next());
-		model.prepareItem(itemid);
+		time = model.prepareItem(itemid);
 		field3.setText("" + itemid);
 		field5.setText(scan.next());
 		
@@ -259,17 +253,10 @@ public class InventoryView
 				scan.next();
 				scan.next();
 			}
-			/*String locationname = scan.next() + " ";
-			locationname += scan.next();
-			if(locationname.equalsIgnoreCase("Facility 1"))
-			{
-				locationname += " " + scan.next() + " ";
-				locationname += scan.next();
-			}*/
 			
 			String copyamount = scan.next();
 			scan.close();
-			int check = model.editItem(field3.getText(),field5.getText(),field8.getText(),copyid,copypartname,copyamount);//locationname,copyamount);
+			int check = model.editItem(field3.getText(),field5.getText(),field8.getText(),copyid,copypartname,copyamount,time);//locationname,copyamount);
 			if(check==0)
 			{
 				model.addItem(field5.getText(),field8.getText());

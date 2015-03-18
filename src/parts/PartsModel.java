@@ -1,5 +1,6 @@
 package parts;
 
+import java.sql.Timestamp;
 import java.util.Scanner;
 
 public class PartsModel {
@@ -176,14 +177,27 @@ public class PartsModel {
 				partArray[d][5] = partArray[d + 1][5];
 
 			} else if (partArray[d][1].equalsIgnoreCase(text)) {
-				for (int c = 0; c < itemArray.length; c++) {
-					if (partArray[d][1].equalsIgnoreCase(itemArray[c][1])) {
-						System.out
-								.println("An inventory item references this Part. Delete the Item first. Delete failed.");
+				for (int c = 0; c < itemArray.length; c++) 
+				{
+					if (partArray[d][1].equalsIgnoreCase(itemArray[c][1]))
+					{
+						System.out.println("An inventory item references this Part. Delete the Item first. Delete failed.");
 						break;
 					}
-					if (c == itemArray.length - 1) {
-						found = 1;
+					if (c == itemArray.length - 1) 
+					{
+						for (int p = 0; p < prodDetailArray.length; p++)
+						{
+							if (partArray[d][0] == prodDetailArray[p][1]) 
+							{
+								System.out.println("A product template detail references this Part. Delete the Template Detail first. Delete failed."); 
+								break;
+							}
+							if (p == prodDetailArray.length - 1)
+							{
+								found = 1;
+							}
+						}
 					}
 				}
 				if (found == 0) {
@@ -229,7 +243,6 @@ public class PartsModel {
 		}
 		return 0;
 	}
-
 	// End Parts View
 
 	// Inventory View
@@ -263,9 +276,10 @@ public class PartsModel {
 		}
 	}
 	
-	public void prepareItem(int itemid)
+	public Timestamp prepareItem(int itemid)
 	{
-		pdg.prepareItemRow(itemid);
+		Timestamp time = pdg.prepareItemRow(itemid);
+		return time;
 	}
 
 	public String getItem(int index) {
@@ -281,7 +295,7 @@ public class PartsModel {
 	}
 
 	public int editItem(String id, String partname, String amount,
-			String copyid, String copypartname, String copyamount) {
+			String copyid, String copypartname, String copyamount, Timestamp time) {
 		System.out.println(partname + copypartname + amount + copyamount);
 		for (int e = 0; e < itemArray.length; e++) {
 			if (itemArray[e][1].equalsIgnoreCase(partname)
@@ -300,8 +314,12 @@ public class PartsModel {
 				itemArray[e][2] = this.getLocation();
 				itemArray[e][3] = amount;
 				Integer partid = Integer.parseInt(id);
-				pdg.updateItemRow(partid, itemArray[e][1], itemArray[e][2],
-						itemArray[e][3]);
+				boolean check = pdg.updateItemRow(partid, itemArray[e][1], itemArray[e][2],
+						itemArray[e][3], time);
+				if(check == false)
+				{
+					this.itemListFill();
+				}
 				return 1;
 			}
 		}

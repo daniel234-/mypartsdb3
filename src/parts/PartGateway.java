@@ -1,13 +1,15 @@
 package parts;
 
+import java.sql.Timestamp;
+
 public interface PartGateway 
 {
 	public void loadInventory();
 	public void loadParts();
 	public int nextRow();
-	public void prepareItemRow(int itemid);
+	public Timestamp prepareItemRow(int itemid);
 	public void addItemRow(String text1, String text2, String text3);
-	public void updateItemRow(int number, String text1, String text2, String text3);
+	public boolean updateItemRow(int number, String text1, String text2, String text3, Timestamp time);
 	public void deleteItemRow(int number);
 	public void addPartRow(String text1, String text2, String text3, String text4, String text5);
 	public void updatePartRow(int number, String text1, String text2, String text3, String text4, String text5);

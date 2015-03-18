@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -17,11 +18,13 @@ public class PartGatewaySQL implements PartGateway
 	private Connection conn = null;
 	PreparedStatement sRS = null;
 	private ResultSet rs = null;
+	private final int QUERY_TIMEOUT = 10;//query timeout threshold in seconds
+	
 	private String insertItemRow = "INSERT INTO inventory_table" 
-	+ "(part_name, location_name, quantity) VALUES" 
-			+ "(?, ?, ?)";
+	+ "(part_name, location_name, quantity, last_modified) VALUES" 
+			+ "(?, ?, ?, ?)";
 	private String updateItemRow = "UPDATE inventory_table SET " 
-	+ "part_name = ?, location_name = ?, quantity = ? "
+	+ "part_name = ?, location_name = ?, quantity = ? , last_modified = ?"
 			+ "WHERE id_number = ?";
 	private String deleteItemRow = "DELETE FROM inventory_table WHERE id_number = ?";
 	private String insertPartRow = "INSERT INTO part_table" 
@@ -37,9 +40,6 @@ public class PartGatewaySQL implements PartGateway
 	private String editProdTempRow = "UPDATE product_table SET "
 			+ "product_number = ?, product_description = ? "
 			+ "WHERE id = ?";
-	private String prepareItemRow = "SELECT part_name, location_name, quantity "
-	+ "FROM inventory_table "
-			+ "WHERE id_number = ? FOR UPDATE ";
 	
 	public PartGatewaySQL()
 	{
@@ -132,6 +132,7 @@ public class PartGatewaySQL implements PartGateway
         	sRS.setString(1, partname);
         	sRS.setString(2, location);
         	sRS.setString(3, partamount);
+        	sRS.setTimestamp(4, new java.sql.Timestamp(System.currentTimeMillis()));
 			sRS.executeUpdate();
 			sRS.close();
 		} catch (SQLException e) {
@@ -139,40 +140,56 @@ public class PartGatewaySQL implements PartGateway
 		}
 	}
 	
-	public void updateItemRow(int itemid, String partname, String location, String partamount)
+	public boolean updateItemRow(int itemid, String partname, String location, String partamount, Timestamp time)
 	{
 		try {
-        	sRS = conn.prepareStatement(updateItemRow);
-        	sRS.setString(1, partname);
-        	sRS.setString(2, location);
-        	sRS.setString(3, partamount);
-        	sRS.setInt(4,itemid);
-			sRS.executeUpdate();
-			sRS.close();
+			Timestamp lasttime = this.prepareItemRow(itemid);
+			if(lasttime.toString().equalsIgnoreCase(time.toString()))
+			{
+				System.out.println("Entry checks out.");
+				sRS = conn.prepareStatement(updateItemRow);
+				sRS.setString(1, partname);
+				sRS.setString(2, location);
+				sRS.setString(3, partamount);
+				sRS.setTimestamp(4, new java.sql.Timestamp(System.currentTimeMillis()));
+				sRS.setInt(5,itemid);
+				sRS.executeUpdate();
+				sRS.close();
+			}
+			else
+			{
+				System.out.println("Entry was editted prior to your edit, please check the revised entry.");
+				return false;
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return true;
 	}
 	
 
-	public void prepareItemRow(int itemid)
+	public Timestamp prepareItemRow(int itemid)
 	{
-		int dbid = 13;
-		while (itemid != dbid)
-		{
-			try {
-				sRS = conn.prepareStatement(prepareItemRow);
-				rs = sRS.executeQuery();
-				rs.first();	
+		Timestamp time = null;
+		int dbid = 0;
+		int status = 0;
+		try {
+			sRS = conn.prepareStatement("select * from inventory_table");
+			sRS.setQueryTimeout(QUERY_TIMEOUT);
+			rs = sRS.executeQuery();
+			while (dbid != itemid && status == 0)
+			{
+				status = this.nextRow();
 				dbid = rs.getInt("id_number");
-				System.out.println(dbid);
-				if(rs != null)
-					rs.close();
-				sRS.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
 			}
+			if(rs != null)
+				time = this.getTimestamp();
+				rs.close();
+			sRS.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
+		return time;
 	}
 	
 	
@@ -369,5 +386,16 @@ public class PartGatewaySQL implements PartGateway
 			throw new RuntimeException(e.getMessage());
 		}
 		return partnumber;
+	}
+	
+	public Timestamp getTimestamp()
+	{
+		Timestamp time = null;
+		try {
+			time = rs.getTimestamp("last_modified");
+		} catch (SQLException e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		return time;
 	}
 }
