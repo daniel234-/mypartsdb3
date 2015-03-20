@@ -14,7 +14,8 @@ public class ProdTempDetailView {
 	private DefaultListModel listModel;
 	private JList prodDetailList;
 	private JTextField templateDetailInfo, prodTempID, prodTempIDText, partID,
-			partIDText, quantity, quantityText;
+			partIDText, quantity, quantityText, part, partText, template,
+			templateText;
 	private GridBagConstraints g;
 	private String copy = "";
 	private Font littleFont, bigFont;
@@ -141,52 +142,100 @@ public class ProdTempDetailView {
 		g.gridy = 3;
 		g.gridwidth = 2;
 		secondaryPanel.add(quantityText, g);
+
+		part = new JTextField("         Part Number: ");
+		part.setHorizontalAlignment(JTextField.RIGHT);
+		part.setFont(bigFont);
+		part.setEditable(false);
+		g.gridx = 0;
+		g.gridy = 4;
+		g.gridwidth = 2;
+		secondaryPanel.add(part, g);
+
+		partText = new JTextField("", 10);
+		partText.setHorizontalAlignment(JTextField.CENTER);
+		partText.setFont(bigFont);
+		partText.setEditable(true);
+		g.gridx = 2;
+		g.gridy = 4;
+		g.gridwidth = 2;
+		secondaryPanel.add(partText, g);
+
+		template = new JTextField("     Template Description: ");
+		template.setHorizontalAlignment(JTextField.RIGHT);
+		template.setFont(bigFont);
+		template.setEditable(false);
+		g.gridx = 0;
+		g.gridy = 5;
+		g.gridwidth = 2;
+		secondaryPanel.add(template, g);
+
+		templateText = new JTextField("", 10);
+		templateText.setHorizontalAlignment(JTextField.CENTER);
+		templateText.setFont(bigFont);
+		templateText.setEditable(true);
+		g.gridx = 2;
+		g.gridy = 5;
+		g.gridwidth = 2;
+		secondaryPanel.add(templateText, g);
+		
+		this.refreshList();
 	}
 
-	
-	public void fillIn(String prodDetail){
+	public void fillIn(String prodDetail) {
 		this.copy = prodDetail;
+		String copyTempID;
+		String copyPartID;
 		Scanner scan = new Scanner(copy);
-		/*skip id until implemented*/
-		scan.next();
-		scan.next();
-		quantityText.setText(scan.next());
+		copyTempID = scan.next();
+		prodTempIDText.setText(copyTempID);
+		copyPartID = scan.next();
+		partIDText.setText(copyPartID);
+		quantityText.setText(scan.next());		
 		scan.close();
 	}
+
 	public int checkInput(int mode) {
-		if (mod.checkProdDetail(quantityText.getText(), mode) == 1) {
+	
+		if (mod.checkProdDetail(partText.getText(), templateText.getText(),
+				quantityText.getText(), mode) == 1) {
 			return 1;
 		}
 		if (mode == 1) {
-			mod.addProdDetail(quantityText.getText());
+			mod.addProdDetail(partText.getText(), templateText.getText(),
+					quantityText.getText());
 		}
 		if (mode == 2) {
 			Scanner scan = new Scanner(this.copy);
-			scan.next();
-			scan.next();
+			String copyTempID = scan.next();
+			String copyPartID = scan.next();
 			String copyQuantity = scan.next();
-			int check = mod.editProdDetail(quantityText.getText(), copyQuantity);
-			if(check == 0){
-				mod.addProdDetail(quantityText.getText());
+			int check = mod
+					.editProdDetail(prodTempIDText.getText(), partIDText.getText(), quantityText.getText(),copyQuantity);
+			if (check == 0) {
+				mod.addProdDetail(partText.getText(), templateText.getText(),
+						quantityText.getText());
 			}
 		}
 		this.fieldCleanUp();
 		return 0;
 	}
-	
-	public void refreshList(){
+
+	public void refreshList() {
 		listModel.clear();
-		for(int n = 0; n < 12; n++){
+		mod.prodDetailListFill();
+		for (int n = 0; n < 12; n++) {
 			String text = mod.refreshProdDetailList(n);
-			if(text.equalsIgnoreCase(" ")){
+			if (text.equalsIgnoreCase(" ")) {
 				n = 12;
-			} else{
+			} else {
 				listModel.addElement(text);
 			}
 		}
 	}
 
-	public void registerListeners(PartsButtonController pbc, TemplateDetailListController tldc) {
+	public void registerListeners(PartsButtonController pbc,
+			TemplateDetailListController tldc) {
 		addButton.addActionListener(pbc);
 		editButton.addActionListener(pbc);
 		deleteButton.addActionListener(pbc);
@@ -197,6 +246,8 @@ public class ProdTempDetailView {
 		prodTempIDText.setText("");
 		partIDText.setText("");
 		quantityText.setText("");
+		partText.setText("");
+		templateText.setText("");
 		copy = "";
 	}
 

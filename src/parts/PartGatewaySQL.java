@@ -21,11 +21,11 @@ public class PartGatewaySQL implements PartGateway
 	private final int QUERY_TIMEOUT = 10;//query timeout threshold in seconds
 	
 	private String insertItemRow = "INSERT INTO inventory_table" 
-	+ "(part_name, location_name, quantity, last_modified) VALUES" 
-			+ "(?, ?, ?, ?)";
+	+ "(part_name, location_name, quantity) VALUES" 
+			+ "(?, ?, ?)";
 	private String updateItemRow = "UPDATE inventory_table SET " 
-	+ "part_name = ?, location_name = ?, quantity = ? , last_modified = ?"
-			+ "WHERE id_number = ?";
+			+ "part_name = ?, location_name = ?, quantity = ? , last_modified = ?"
+					+ "WHERE id_number = ?";
 	private String deleteItemRow = "DELETE FROM inventory_table WHERE id_number = ?";
 	private String insertPartRow = "INSERT INTO part_table" 
 	+ "(part_number, part_name, vendor_name, unit_of_quantity, external_part_number) VALUES" 
@@ -40,6 +40,12 @@ public class PartGatewaySQL implements PartGateway
 	private String editProdTempRow = "UPDATE product_table SET "
 			+ "product_number = ?, product_description = ? "
 			+ "WHERE id = ?";
+	private String deleteProdTempRow = "DELETE FROM product_table WHERE id = ?";
+	private String insertProdDetailRow = "INSERT INTO product_detail"
+			+ "(product_id, part_id, quantity) VALUES"
+			+ "(?, ?, ?)";
+	private String editProdDetailRow;
+	private String deleteProdDetailRow = "DELETE FROM product_detail WHERE product_id = ?";
 	
 	public PartGatewaySQL()
 	{
@@ -85,25 +91,57 @@ public class PartGatewaySQL implements PartGateway
         }
 	}
 	
-	public void loadInventory() 
+	public int loadProdDetail(){
+		try{
+			sRS = conn.prepareStatement("select * from product_detail");
+			rs = sRS.executeQuery();
+			if(rs.first()== true){
+				return 0;
+			} return 1;
+		} catch (SQLException e){
+			e.printStackTrace();
+			return 1;
+		}
+	}
+	
+	public int loadProdTemp(){
+		try {
+			sRS = conn.prepareStatement("select * from product_table");
+			rs = sRS.executeQuery();
+			if(rs.first() == true){
+				return 0;
+			} return 1;
+		} catch(SQLException e){
+			e.printStackTrace();
+			return 1;
+		}
+	}
+	
+	public int loadInventory() 
 	{
         try {
         	sRS = conn.prepareStatement("select * from inventory_table");
             rs = sRS.executeQuery();
-            rs.first();
+            if(rs.first() == true){
+            	return 0;
+            } return 1;
         } catch (SQLException e) {
             e.printStackTrace();
+            return 1;
         }
 	}
 	
-	public void loadParts() 
+	public int loadParts() 
 	{
         try {
         	sRS = conn.prepareStatement("select * from part_table");
             rs = sRS.executeQuery();
-            rs.first();
+            if(rs.first() == true){
+            	return 0;
+            } return 1;
         } catch (SQLException e) {
             e.printStackTrace();
+            return 1;
         }
 	}
 	
@@ -132,7 +170,6 @@ public class PartGatewaySQL implements PartGateway
         	sRS.setString(1, partname);
         	sRS.setString(2, location);
         	sRS.setString(3, partamount);
-        	sRS.setTimestamp(4, new java.sql.Timestamp(System.currentTimeMillis()));
 			sRS.executeUpdate();
 			sRS.close();
 		} catch (SQLException e) {
@@ -191,6 +228,7 @@ public class PartGatewaySQL implements PartGateway
 		}
 		return time;
 	}
+	
 	
 	
 	public void deleteItemRow(int partid)
@@ -261,6 +299,125 @@ public class PartGatewaySQL implements PartGateway
 			e.printStackTrace();
 		}
 	}
+	
+	public void updateProdTempRow(int id, String partNum, String partDesc){
+		try {
+			sRS = conn.prepareStatement(editProdTempRow);
+			sRS.setString(1, partNum);
+			sRS.setString(2, partDesc);
+			sRS.setInt(3, id);
+			sRS.executeUpdate();
+			sRS.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	} 
+	
+	public void deleteProdTempRow(int id){
+		try{ 
+			sRS = conn.prepareStatement(deleteProdTempRow);
+			sRS.setInt(1, id);
+			sRS.executeUpdate();
+			sRS.close();
+		} catch (SQLException e){
+			e.printStackTrace();
+		}
+	}
+	
+	public void deleteProdDetailRow(int num){
+		try{
+			sRS = conn.prepareStatement(deleteProdDetailRow);
+			sRS.setInt(1, num);
+			sRS.executeUpdate();
+			sRS.close();
+		} catch(SQLException e){
+			e.printStackTrace();
+		}
+	}
+	
+	public void addProdDetailRow(String partid, String tempid, String quantity){
+		int convertpartID = Integer.valueOf(partid);
+		int converttempID = Integer.valueOf(tempid);
+		int convertInt = Integer.valueOf(quantity);
+		try {
+			sRS = conn.prepareStatement(insertProdDetailRow);
+			sRS.setInt(1, convertpartID);
+			sRS.setInt(2, converttempID);
+			sRS.setInt(3, convertInt);
+			sRS.executeUpdate();
+			sRS.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("This part may only reference one template");
+		} catch (Exception e){
+			System.out.println("This part may only reference one template");
+		}
+		
+	}
+	
+	public void updateProdDetailRow(String partid, String tempid, String quantity){
+		int convertpartID = Integer.valueOf(partid);
+		int converttempID = Integer.valueOf(tempid);
+		int convertInt = Integer.valueOf(quantity);
+		/* the problem is here. trying to edit a part with a different part
+		 * id but same product id will cause the error. i know this logic is wrong
+		 * just trying to fix it
+		 */
+		editProdDetailRow = "UPDATE product_detail SET "
+		+ "quantity = ? WHERE product_id = ? AND part_id = ?";
+		try {
+			sRS = conn.prepareStatement(editProdDetailRow);
+			sRS.setInt(1, convertInt);
+			sRS.setInt(2, converttempID);
+			sRS.setInt(3, convertpartID);
+			sRS.executeUpdate();
+			sRS.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			System.out.println("error");
+			e.printStackTrace();
+		}
+	}
+	
+	public String getProdDetailTempID(){
+		int idnumber = 0;
+		try {
+			if(rs != null)
+				idnumber = rs.getInt("product_id");
+		} catch (SQLException e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		Integer number = idnumber;
+		String text = number.toString();
+		return text;
+	}
+	
+	public String getProdDetailPartID(){
+		int idnumber = 0;
+		try {
+			if(rs != null)
+				idnumber = rs.getInt("part_id");
+		} catch (SQLException e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		Integer number = idnumber;
+		String text = number.toString();
+		return text;
+	}
+	
+	public String getProdDetailQuant(){
+		int idnumber = 0;
+		try {
+			if(rs != null)
+				idnumber = rs.getInt("quantity");
+		} catch (SQLException e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		Integer number = idnumber;
+		String text = number.toString();
+		return text;
+	}
 
 	public String getItemID()
 	{
@@ -276,6 +433,20 @@ public class PartGatewaySQL implements PartGateway
 		return text;
 	}
 	
+	public String getProdTempID()
+	{
+		int prodTempNum = 0;
+		try{
+			if (rs != null)
+				prodTempNum = rs.getInt("id");
+		} catch (SQLException e){
+			//throw new RuntimeException(e.getMessage());
+			return null;
+		}
+		Integer number = prodTempNum;
+		String text = number.toString();
+		return text;
+	}
 	public String getPart()
 	{
 		String partname = "";
@@ -340,6 +511,18 @@ public class PartGatewaySQL implements PartGateway
 		return partnumber;
 	}
 	
+	public String getProdTempNum(){
+		String tempNum = "";
+		try {
+			if (rs != null)
+				tempNum = rs.getString("product_number");
+		} catch (SQLException e){
+			//throw new RuntimeException(e.getMessage());
+			return null;
+		}
+		return tempNum;
+	}
+	
 	public String getPartName()
 	{
 		String partname = "";
@@ -350,6 +533,18 @@ public class PartGatewaySQL implements PartGateway
 			throw new RuntimeException(e.getMessage());
 		}
 		return partname;
+	}
+	
+	public String getProdTempDesc(){
+		String prodDesc = "";
+		try {
+			if (rs != null)
+				prodDesc = rs.getString("product_description");
+		} catch (SQLException e){
+			//throw new RuntimeException(e.getMessage());
+			return null;
+		}
+		return prodDesc;
 	}
 	
 	public String getVendor()

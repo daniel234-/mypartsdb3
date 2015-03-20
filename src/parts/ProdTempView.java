@@ -151,49 +151,15 @@ public class ProdTempView extends JFrame {
 		g.gridwidth = 2;
 		secondaryPanel.add(productDescText, g);
 		
-		/*
-		quantity = new JTextField("              Quantity: ");
-		quantity.setHorizontalAlignment(JTextField.RIGHT);
-		quantity.setFont(bigFont);
-		quantity.setEditable(false);
-		g.gridx = 0;
-		g.gridy = 4;
-		g.gridwidth = 2;
-		secondaryPanel.add(quantity, g);
-
-		quantityText = new JTextField("", 10);
-		quantityText.setHorizontalAlignment(JTextField.CENTER);
-		quantityText.setFont(bigFont);
-		quantityText.setEditable(true);
-		g.gridx = 2;
-		g.gridy = 4;
-		g.gridwidth = 2;
-		secondaryPanel.add(quantityText, g);
-
-		partID = new JTextField("                Part ID: ");
-		partID.setHorizontalAlignment(JTextField.RIGHT);
-		partID.setFont(bigFont);
-		partID.setEditable(false);
-		g.gridx = 0;
-		g.gridy = 5;
-		g.gridwidth = 2;
-		secondaryPanel.add(partID, g);
-
-		partIDText = new JTextField("", 10);
-		partIDText.setHorizontalAlignment(JTextField.CENTER);
-		partIDText.setFont(bigFont);
-		partIDText.setEditable(false);
-		g.gridx = 2;
-		g.gridy = 5;
-		g.gridwidth = 2;
-		secondaryPanel.add(partIDText, g);*/
+		this.refreshList();
 	}
 
 	public void fillIn(String prodTemp) {
 		this.copy = prodTemp;
 		Scanner scan = new Scanner(prodTemp);
-		scan.next(); // skip ID until implemented. will be changed
-
+		String id = scan.next(); // skip ID until implemented. will be changed
+		
+		templateIDText.setText(id);
 		productNumText.setText(scan.next());
 		StringBuilder sb = new StringBuilder();
 		sb.append(scan.next());
@@ -221,7 +187,7 @@ public class ProdTempView extends JFrame {
 		if (mode == 2) {
 			Scanner scan = new Scanner(this.copy);
 			// again ID needs to be implemented
-			scan.next();
+			String copyID = scan.next();
 			String copyProdNum = scan.next();
 			StringBuilder sb = new StringBuilder();
 			sb.append(scan.next());
@@ -232,9 +198,9 @@ public class ProdTempView extends JFrame {
 			String copyDesc = sb.toString();
 			scan.close();
 
-			int check = model.editTemplate(productNumText.getText(),
+			int check = model.editTemplate(templateIDText.getText(), productNumText.getText(),
 					productDescText.getText(),
-					copyProdNum, copyDesc);
+					copyProdNum, copyDesc, copyID);
 			if (check == 0){
 				model.addProdTemp(productNumText.getText(), productDescText.getText());
 			}
@@ -245,6 +211,7 @@ public class ProdTempView extends JFrame {
 
 	public void refreshList() {
 		listModel.clear();
+		model.prodTempListFill();
 		for (int n = 0; n < 12; n++) {
 			String text = model.refreshProdTempList(n);
 			if (text.equalsIgnoreCase(" ")) {

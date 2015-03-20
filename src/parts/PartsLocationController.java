@@ -16,7 +16,6 @@ public class PartsLocationController implements ActionListener
 	
 	public void actionPerformed(ActionEvent a)
 	{
-		System.out.println("check in actionperformed");
         JComboBox cb = (JComboBox)a.getSource();
         String location = (String)cb.getSelectedItem();
         model.setLocation(location);

@@ -11,13 +11,7 @@ public class Parts
 	public static void main(String[] args) 
 	{
 		PartGateway pdg = null;
-		//try {
 		pdg = new PartGatewaySQL();
-			
-		/*} catch(GatewayException e) {
-			System.out.println("Error creating DB connection: " + e.getMessage());
-			System.exit(0);
-		}*/
 		
 		Dimension minimumSize = new Dimension(600,600);
 		PartsModel model = new PartsModel(pdg);

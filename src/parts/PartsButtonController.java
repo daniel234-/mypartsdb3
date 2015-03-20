@@ -21,6 +21,7 @@ public class PartsButtonController implements ActionListener
 		this.view = view;
 		this.view2 = view2;
 		this.view3 = otherview3;
+		this.view4 = otherview4;
 	}
 
 	public void actionPerformed(ActionEvent e) 
@@ -94,6 +95,7 @@ public class PartsButtonController implements ActionListener
 			//TODO
 			list = view4.getProdDetailList();
 			String delete = model.getProdDetail(list.getSelectedIndex());
+			model.deleteProdDetail(delete);
 			view4.fieldCleanUp();
 			view4.refreshList();
 		}

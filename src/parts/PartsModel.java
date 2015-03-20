@@ -14,6 +14,8 @@ public class PartsModel {
 	private int mode = 0;
 	private String unitPart = "";
 	private String location = "";
+	private String partid = "";
+	private String templateid = "";
 
 	public PartsModel(PartGateway pdg) {
 		this.width = 0;
@@ -22,12 +24,47 @@ public class PartsModel {
 
 		this.itemListFill();
 		this.partListFill();
+		this.prodTempListFill();
+		this.prodDetailListFill();
+	}
+	
+	public void prodDetailListFill(){
+		int status = 0;
+		int count = 0;
+		if(pdg.loadProdDetail() == 1){
+			return;
+		}
+		while(status == 0){
+			prodDetailArray[count][0] = pdg.getProdDetailTempID();
+			prodDetailArray[count][1] = pdg.getProdDetailPartID();
+			prodDetailArray[count][2] = pdg.getProdDetailQuant();
+			count++;
+			status = pdg.nextRow();
+		}
+	}
+	
+	public void prodTempListFill(){
+		int status = 0;
+		int count = 0;
+		if(pdg.loadProdTemp() == 1){
+			return;
+		}
+		while (status == 0){
+			prodTempArray[count][0] = pdg.getProdTempID();
+			prodTempArray[count][1] = pdg.getProdTempNum();
+			prodTempArray[count][2] = pdg.getProdTempDesc();
+			count++;			
+			status = pdg.nextRow();
+		}
+		
 	}
 
 	public void itemListFill() {
 		int status = 0;
 		int count = 0;
-		pdg.loadInventory();
+		if(pdg.loadInventory() == 1){
+			return;
+		}
 		while (status == 0) {
 			itemArray[count][0] = pdg.getItemID();
 			itemArray[count][1] = pdg.getPart();
@@ -41,7 +78,9 @@ public class PartsModel {
 	public void partListFill() {
 		int status = 0;
 		int count = 0;
-		pdg.loadParts();
+		if(pdg.loadParts() == 1){
+			return;
+		}
 		while (status == 0) {
 			partArray[count][0] = pdg.getPartID();
 			partArray[count][1] = pdg.getPartName();
@@ -175,20 +214,18 @@ public class PartsModel {
 				partArray[d][3] = partArray[d + 1][3];
 				partArray[d][4] = partArray[d + 1][4];
 				partArray[d][5] = partArray[d + 1][5];
-
 			} else if (partArray[d][1].equalsIgnoreCase(text)) {
-				for (int c = 0; c < itemArray.length; c++) 
-				{
-					if (partArray[d][1].equalsIgnoreCase(itemArray[c][1]))
-					{
-						System.out.println("An inventory item references this Part. Delete the Item first. Delete failed.");
+				for (int c = 0; c < itemArray.length; c++) {
+					if (partArray[d][1].equalsIgnoreCase(itemArray[c][1])) {
+						System.out
+								.println("An inventory item references this Part. Delete the Item first. Delete failed.");
 						break;
 					}
 					if (c == itemArray.length - 1) 
 					{
 						for (int p = 0; p < prodDetailArray.length; p++)
 						{
-							if (partArray[d][0] == prodDetailArray[p][1]) 
+							if (partArray[d][0].equalsIgnoreCase(prodDetailArray[p][1]))
 							{
 								System.out.println("A product template detail references this Part. Delete the Template Detail first. Delete failed."); 
 								break;
@@ -243,6 +280,7 @@ public class PartsModel {
 		}
 		return 0;
 	}
+
 	// End Parts View
 
 	// Inventory View
@@ -296,7 +334,6 @@ public class PartsModel {
 
 	public int editItem(String id, String partname, String amount,
 			String copyid, String copypartname, String copyamount, Timestamp time) {
-		System.out.println(partname + copypartname + amount + copyamount);
 		for (int e = 0; e < itemArray.length; e++) {
 			if (itemArray[e][1].equalsIgnoreCase(partname)
 					&& !partname.equalsIgnoreCase(copypartname)) {
@@ -429,8 +466,8 @@ public class PartsModel {
 		}
 	}
 
-	public int editTemplate(String prodNum, String prodDesc,
-			String copyProdNum, String copyprodDesc) {
+	public int editTemplate(String id, String prodNum, String prodDesc,
+			String copyProdNum, String copyprodDesc, String copyID) {
 		for (int i = 0; i < prodTempArray.length; i++) {
 			if(prodTempArray[i][1].equalsIgnoreCase(prodNum)
 					&& !prodNum.equalsIgnoreCase(copyProdNum)){
@@ -442,11 +479,15 @@ public class PartsModel {
 					&& !prodDesc.equalsIgnoreCase(copyprodDesc)) {
 				return 1;
 			}
-			if (prodTempArray[i][1].equalsIgnoreCase(copyProdNum)
+			if (prodTempArray[i][0].equalsIgnoreCase(copyID) &&
+					prodTempArray[i][1].equalsIgnoreCase(copyProdNum)
 					&& prodTempArray[i][2].equalsIgnoreCase(copyprodDesc)){
 					//&& prodTempArray[i][3].equalsIgnoreCase(copyQuantity)) {
+				prodTempArray[i][0] = id;
 				prodTempArray[i][1] = prodNum;
 				prodTempArray[i][2] = prodDesc;
+				Integer convertID = Integer.parseInt(id);
+				pdg.updateProdTempRow(convertID, prodNum, prodDesc);
 				//prodTempArray[i][3] = quantity;
 				return 1;
 			}
@@ -471,6 +512,8 @@ public class PartsModel {
 				//prodTempArray[i][3] = prodTempArray[i+1][3];
 			} else if (prodTempArray[i][1].equalsIgnoreCase(text)){
 				found = 1;
+				Integer convertID = Integer.parseInt(prodTempArray[i][0]);
+				pdg.deleteProdTempRow(convertID);
 				prodTempArray[i][1] =  prodTempArray[i+1][1];
 				prodTempArray[i][2] = prodTempArray[i+1][2];
 				//prodTempArray[i][3] = prodTempArray[i+1][3];
@@ -481,7 +524,6 @@ public class PartsModel {
 	public int checkProdTemp(String prodNum, String prodDesc,
 			int mode) {
 		// TODO
-		int found = 0;
 		if (prodNum.length() > 20 || prodNum == null || prodNum.equals("")) {
 			System.out.println("Invalid Product Number: " + prodNum);
 			return 1;
@@ -496,14 +538,7 @@ public class PartsModel {
 				System.out.println("Product Description must be unique");
 				return 1;
 			}
-		}/*
-		for(int i = 0; i < 12; i++){
-			String reference = partArray[i][2];
-			if(reference.equalsIgnoreCase(prodTempArray[i][2]) && reference != null){
-				System.out.println("Part must be unique to a Template");
-				return 1;
-			}
-		}*/
+		}
 		return 0;
 	}
 
@@ -519,11 +554,11 @@ public class PartsModel {
 	}
 	
 	public String refreshProdDetailList(int n){
-		if(prodDetailArray[n][3] == null){
+		if(prodDetailArray[n][2] == null){
 			return " ";
 		} else{
 			String text = prodDetailArray[n][0] + ", " + prodDetailArray[n][1] + ", " + 
-					prodDetailArray[n][2] + ", " + prodDetailArray[n][3];
+					prodDetailArray[n][2] ;
 			return text;
 		}
 	}
@@ -533,30 +568,119 @@ public class PartsModel {
 			if (i == index){
 				String retString;
 				return retString = (prodDetailArray[i][0] + " "
-						+ prodDetailArray[i][1] + " " + prodDetailArray[i][2] + " " + prodDetailArray[i][3]);
+						+ prodDetailArray[i][1] + " " + prodDetailArray[i][2]);
 			}
 		}
 		return "N/A";
 	}
 	
-	public void addProdDetail(String quantity){
-		
+	public void addProdDetail(String partNum, String template, String quantity){
+		for (int i = 0; i < prodDetailArray.length; i++) {
+			if (prodDetailArray[i][1] != null) {
+				if (prodDetailArray[i][1].equalsIgnoreCase(partid)
+						&& templateid.equalsIgnoreCase(prodDetailArray[i][0])) {
+					System.out.println("keys must form a unique index");
+					return;
+				}
+			}
+			if (partid.equalsIgnoreCase(prodDetailArray[i][1])) {
+				if (!templateid.equalsIgnoreCase(prodDetailArray[i][0])) {
+					System.out.println("Part must be unique to product");
+					return;
+				}
+			}
+			if (templateid.equalsIgnoreCase(prodDetailArray[i][0])) {
+				if (!partid.equalsIgnoreCase(prodDetailArray[i][1])) {
+					System.out.println("Product must be unique with this part");
+					return;
+				}
+			}
+			if (prodDetailArray[i][2] == null) {
+				prodDetailArray[i][0] = templateid;
+				prodDetailArray[i][1] = partid;
+				prodDetailArray[i][2] = quantity;
+				pdg.addProdDetailRow(templateid, partid, quantity);
+				i = prodDetailArray.length;
+				continue;
+			}
+		}		
+		partid = "";
+		templateid = "";
 	}
 	
-	public int editProdDetail(String quantity, String copyQuantity){
+	public int editProdDetail(String tempid, String otherpartid, String quantity, String copyQuant){
+		for (int i = 0; i < prodDetailArray.length; i++) {
+			if (prodDetailArray[i][2].equalsIgnoreCase(copyQuant)) {
+				prodDetailArray[i][0] = tempid;
+				prodDetailArray[i][1] = otherpartid;
+				prodDetailArray[i][2] = quantity;
+				pdg.updateProdDetailRow(otherpartid, tempid, quantity);
+				return 1;
+			}
+		}
+		partid = "";
+		templateid = "";
 		return 0;
 	}
 	
-	public int checkProdDetail(String quantity, int mode){
+	public int checkProdDetail(String partNum, String template, String quantity, int mode){
 		if(this.checkNumber(quantity, mode) == 1){
 			return 1;
 		}
-		return 0;
-		
+		if(mode != 2){
+		int flag = 0;
+		for (int i = 0; i < partArray.length; i++){
+			if (partNum.equalsIgnoreCase(partArray[i][2])){
+				partid = partArray[i][0];
+				flag = 1;
+				break;
+			}
+		}
+		if(flag == 0){
+			System.out.println("The part specified has not been added to Parts Inventory");
+			return 1;
+		}
+		for (int i = 0; i < prodTempArray.length; i++){
+			if (template.equalsIgnoreCase(prodTempArray[i][2])){
+				templateid = prodTempArray[i][0];
+				flag = 1;
+				break;
+			}
+		}
+		if (flag == 0){
+			System.out.println("The template specified has not been added to Product Template Inventory");
+		}
+		}
+		return 0;		
 	}
 	
-	public void deleteProdDetail(){
-		
+	public void deleteProdDetail(String detail){
+		int found = 0;
+		Scanner scan = new Scanner(detail);
+		//scan.next();
+		text = scan.next();
+		scan.close();
+		for (int i = 0; i < prodDetailArray.length; i++){
+			if(found == 1 && i == prodDetailArray.length - 1){
+				prodDetailArray[i][0] = null;
+				prodDetailArray[i][1] = null;
+				prodDetailArray[i][2] = null;
+				//prodTempArray[i][3] = null;
+			} else if (found == 1 && i < prodDetailArray.length - 1){
+				prodDetailArray[i][0] = prodDetailArray[i+1][0];
+				prodDetailArray[i][1] =  prodDetailArray[i+1][1];
+				prodDetailArray[i][2] = prodDetailArray[i+1][2];
+				//prodTempArray[i][3] = prodTempArray[i+1][3];
+			} else if (prodDetailArray[i][0].equalsIgnoreCase(text)){
+				found = 1;
+				Integer convertID = Integer.parseInt(prodDetailArray[i][0]);
+				pdg.deleteProdDetailRow(convertID);
+				prodDetailArray[i][0] = prodDetailArray[i+1][0];
+				prodDetailArray[i][1] =  prodDetailArray[i+1][1];
+				prodDetailArray[i][2] = prodDetailArray[i+1][2];
+				//prodTempArray[i][3] = prodTempArray[i+1][3];
+			}
+		}
 	}
 
 	public String getUnitPart() {
