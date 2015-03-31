@@ -20,7 +20,7 @@ public class TemplateListController implements ListSelectionListener {
 		// TODO Auto-generated method stub
 		//System.out.println("in value changed");
 		list = view.getProdTemplateList();
-		String s = model.getProdTemp(list.getSelectedIndex());
+		String s = model.getProdTemp(list.getSelectedIndex() + 1);
 		if(s.equalsIgnoreCase("N/A")){
 			// nothing
 		} else{

@@ -21,10 +21,10 @@ public class PartGatewaySQL implements PartGateway
 	private final int QUERY_TIMEOUT = 10;//query timeout threshold in seconds
 	
 	private String insertItemRow = "INSERT INTO inventory_table" 
-	+ "(part_name, location_name, quantity) VALUES" 
-			+ "(?, ?, ?)";
+	+ "(part_name, location_name, quantity, product_template_id) VALUES" 
+			+ "(?, ?, ?, ?)";
 	private String updateItemRow = "UPDATE inventory_table SET " 
-			+ "part_name = ?, location_name = ?, quantity = ? , last_modified = ?"
+			+ "part_name = ?, location_name = ?, quantity = ? , last_modified = ? "
 					+ "WHERE id_number = ?";
 	private String deleteItemRow = "DELETE FROM inventory_table WHERE id_number = ?";
 	private String insertPartRow = "INSERT INTO part_table" 
@@ -163,13 +163,14 @@ public class PartGatewaySQL implements PartGateway
 		}
 	}
 	
-	public void addItemRow(String partname, String location, String partamount)
+	public void addItemRow(String partname, String location, String partamount, int productid)
 	{
 		try {
         	sRS = conn.prepareStatement(insertItemRow);
         	sRS.setString(1, partname);
         	sRS.setString(2, location);
         	sRS.setString(3, partamount);
+        	sRS.setInt(4, productid);
 			sRS.executeUpdate();
 			sRS.close();
 		} catch (SQLException e) {
@@ -204,6 +205,35 @@ public class PartGatewaySQL implements PartGateway
 		return true;
 	}
 	
+	public boolean updateItemProductRow(int itemid, String partname, String location, String partamount, Timestamp time, int productid)
+	{
+		try {
+			Timestamp lasttime = this.prepareItemRow(itemid);
+			if(lasttime.toString().equalsIgnoreCase(time.toString()))
+			{
+				System.out.println("Entry checks out.");
+				sRS = conn.prepareStatement("UPDATE inventory_table SET " 
+						+ "part_name = ?, location_name = ?, quantity = ? , last_modified = ?, product_template_id = ? "
+						+ "WHERE id_number = ?");
+				sRS.setString(1, partname);
+				sRS.setString(2, location);
+				sRS.setString(3, partamount);
+				sRS.setTimestamp(4, new java.sql.Timestamp(System.currentTimeMillis()));
+				sRS.setInt(5,productid);
+				sRS.setInt(6,itemid);
+				sRS.executeUpdate();
+				sRS.close();
+			}
+			else
+			{
+				System.out.println("Entry was editted prior to your edit, please check the revised entry.");
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
 
 	public Timestamp prepareItemRow(int itemid)
 	{
@@ -348,7 +378,6 @@ public class PartGatewaySQL implements PartGateway
 			sRS.executeUpdate();
 			sRS.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			System.out.println("This part may only reference one template");
 		} catch (Exception e){
 			System.out.println("This part may only reference one template");
@@ -360,10 +389,6 @@ public class PartGatewaySQL implements PartGateway
 		int convertpartID = Integer.valueOf(partid);
 		int converttempID = Integer.valueOf(tempid);
 		int convertInt = Integer.valueOf(quantity);
-		/* the problem is here. trying to edit a part with a different part
-		 * id but same product id will cause the error. i know this logic is wrong
-		 * just trying to fix it
-		 */
 		editProdDetailRow = "UPDATE product_detail SET "
 		+ "quantity = ? WHERE product_id = ? AND part_id = ?";
 		try {
@@ -374,7 +399,6 @@ public class PartGatewaySQL implements PartGateway
 			sRS.executeUpdate();
 			sRS.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			System.out.println("error");
 			e.printStackTrace();
 		}

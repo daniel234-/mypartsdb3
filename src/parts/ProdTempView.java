@@ -98,7 +98,7 @@ public class ProdTempView {
 		g.anchor = GridBagConstraints.PAGE_END;
 		secondaryPanel.add(templateInfo, g);
 
-		templateID = new JTextField("         Item ID: ");
+		templateID = new JTextField("         Product ID: ");
 		templateID.setHorizontalAlignment(JTextField.RIGHT);
 		templateID.setFont(bigFont);
 		templateID.setEditable(false);
@@ -213,7 +213,7 @@ public class ProdTempView {
 	public void refreshList() {
 		listModel.clear();
 		model.prodTempListFill();
-		for (int n = 0; n < 12; n++) {
+		for (int n = 1; n < 12; n++) {
 			String text = model.refreshProdTempList(n);
 			if (text.equalsIgnoreCase(" ")) {
 				n = 12;
