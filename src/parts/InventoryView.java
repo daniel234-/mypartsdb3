@@ -499,7 +499,7 @@ public class InventoryView
 				}
 			}
 			scan.close();
-			model.addProduct(copyproductid,copydescription,copyitemid1,copyitemamount1,copyitemid2,copyitemamount2,copyitemid3,copyitemamount3);
+			model.addProduct(copyproductid,copydescription,copyitemid1,copyitemamount1,copyitemid2,copyitemamount2,copyitemid3,copyitemamount3,time);
 		}
 		this.fieldCleanUp();
 		return 0;

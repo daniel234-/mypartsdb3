@@ -568,7 +568,7 @@ public class PartsModel {
 		return 0;
 	}
 	
-	public void addProduct(String copyproductid, String copydescription, String copyitemid1, String copyitemamount1, String copyitemid2, String copyitemamount2, String copyitemid3, String copyitemamount3) {
+	public void addProduct(String copyproductid, String copydescription, String copyitemid1, String copyitemamount1, String copyitemid2, String copyitemamount2, String copyitemid3, String copyitemamount3, Timestamp time) {
 		for (int a = 0; a < itemArray.length; a++) {
 			if (itemArray[a][1] == null) {
 				itemArray[a][1] = copydescription;
