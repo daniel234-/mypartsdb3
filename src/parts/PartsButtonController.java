@@ -87,10 +87,14 @@ public class PartsButtonController implements ActionListener, WindowListener {
 		}
 		if(command.equalsIgnoreCase("Create Product"))
 		{
+			if(session.isCanCreateProducts()){
 			view2.removePanel();
 			view2.fieldCleanUp();
 			view2.productPanel();
 			view2.refreshList();
+			} else {
+				view2.invalidCreateProdPermission();
+			}
 		}
 		if (command.equals("Add Template")) {
 			if (session.isCanAddProdTemp()) {

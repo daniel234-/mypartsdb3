@@ -525,4 +525,8 @@ public class InventoryView
 		JOptionPane.showMessageDialog(deleteButton,
 				"You do not have permission to do that");
 	}
+	
+	public void invalidCreateProdPermission(){
+		JOptionPane.showMessageDialog(createButton, "You do not have permission to do that");
+	}
 }
