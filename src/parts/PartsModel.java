@@ -284,7 +284,8 @@ public class PartsModel {
 	// End Parts View
 
 	// Inventory View
-	public String refreshItemList(int n) {
+	public String refreshItemList(int n) 
+	{
 		if (itemArray[n][1] == null) {
 			return " ";
 		} else {
@@ -423,6 +424,175 @@ public class PartsModel {
 		}
 		return 0;
 	}
+	
+	public int checkProduct(String productid, String description, String itemid1, String itemamount1, String itemid2, String itemamount2, String itemid3, String itemamount3)
+	{
+		int found = 0;
+		String itemlocation = "";
+		for (int i = 1; i < prodTempArray.length - 1; i++) 
+		{
+			if(prodTempArray[i][0] == null)
+			{
+				
+			}
+			else
+			{
+				if(prodTempArray[i][0].equalsIgnoreCase(productid))
+				{
+					if(prodTempArray[i][2].equalsIgnoreCase(description))
+					{
+						found = 1;
+					}
+					else
+					{
+						System.out.println("Description does not match the one referenced by this ID.");
+						return 1;
+					}
+				}
+			}
+		}
+		if(found != 1)
+		{
+			System.out.println("Product Template ID not found.");
+			return 1;
+		}
+		found = 0;
+		for (int i = 0; i < itemArray.length; i++) 
+		{
+			if(itemArray[i][0] == null)
+			{
+				
+			}
+			else
+			{
+				if(itemArray[i][0].equalsIgnoreCase(itemid1))
+				{
+					if(Integer.parseInt(itemArray[i][3]) > Integer.parseInt(itemamount1))
+					{
+						itemlocation = itemArray[i][2];
+						location = itemlocation;
+						found = 1;
+					}
+					else
+					{
+						System.out.println("Not enough quantity of the first item to create this product.");
+						return 1;
+					}
+				}
+			}
+		}
+		if(found != 1)
+		{
+			System.out.println("First Item ID not found.");
+			return 1;
+		}
+		found = 0;
+		if(!itemid2.equalsIgnoreCase(""))
+		{
+			for (int i = 0; i < itemArray.length; i++) 
+			{
+				if(itemArray[i][0] == null)
+				{
+					
+				}
+				else
+				{
+					if(itemArray[i][0].equalsIgnoreCase(itemid2))
+					{
+						if(itemArray[i][2].equalsIgnoreCase(itemlocation))
+						{
+							if(Integer.parseInt(itemArray[i][3]) > Integer.parseInt(itemamount2))
+							{
+								found = 1;
+							}
+							else
+							{
+								System.out.println("Not enough quantity of the second item to create this product.");
+								return 1;
+							}
+						}
+						else
+						{
+							System.out.println("Cannot get inventory from two locations to create a product.");
+							return 1;
+						}
+					}
+				}
+			}
+			if(found != 1)
+			{
+				System.out.println("Second Item ID not found.");
+				return 1;
+			}
+			found = 0;
+		}
+		if(!itemid3.equalsIgnoreCase(""))
+		{
+			for (int i = 0; i < itemArray.length; i++) 
+			{
+				if(itemArray[i][0] == null)
+				{
+					
+				}
+				else
+				{
+					if(itemArray[i][0].equalsIgnoreCase(itemid3))
+					{
+						if(itemArray[i][2].equalsIgnoreCase(itemlocation))
+						{
+							if(Integer.parseInt(itemArray[i][3]) > Integer.parseInt(itemamount3))
+							{
+								found = 1;
+							}
+							else
+							{
+								System.out.println("Not enough quantity of the third item to create this product.");
+								return 1;
+							}
+						}
+						else
+						{
+							System.out.println("Cannot get inventory from two locations to create a product.");
+							return 1;
+						}
+					}
+				}
+			}
+			if(found != 1)
+			{
+				System.out.println("Third Item ID not found.");
+				return 1;
+			}
+			found = 0;
+		}
+		return 0;
+	}
+	
+	public void addProduct(String copyproductid, String copydescription, String copyitemid1, String copyitemamount1, String copyitemid2, String copyitemamount2, String copyitemid3, String copyitemamount3) {
+		for (int a = 0; a < itemArray.length; a++) {
+			if (itemArray[a][1] == null) {
+				itemArray[a][1] = copydescription;
+				itemArray[a][2] = this.getLocation();
+				itemArray[a][3] = "1";
+				//pdg.updateItemRow(partid, itemArray[e][1], itemArray[e][2],
+				//		itemArray[e][3], time);
+				//if(check == false)
+				//{
+				//	this.itemListFill();
+				//}
+				pdg.addItemRow(itemArray[a][1], itemArray[a][2],
+						itemArray[a][3]);
+				a = itemArray.length;
+				continue;
+			}
+			if (itemArray[a][1].equalsIgnoreCase(copydescription)
+					&& itemArray[a][2].equalsIgnoreCase(this.getLocation())) {
+				a = itemArray.length;
+				System.out
+						.println("Similar part name/location found, add failed.");
+			}
+		}
+	}
 
 	// Ends Inventory View
 
@@ -523,7 +693,6 @@ public class PartsModel {
 	
 	public int checkProdTemp(String prodNum, String prodDesc,
 			int mode) {
-		// TODO
 		if (prodNum.length() > 20 || prodNum == null || prodNum.equals("")) {
 			System.out.println("Invalid Product Number: " + prodNum);
 			return 1;
@@ -543,7 +712,7 @@ public class PartsModel {
 	}
 
 	public String getProdTemp(int index) {
-		for (int i = 0; i < prodTempArray.length; i++) {
+		for (int i = 1; i < prodTempArray.length; i++) {
 			if (i == index) {
 				String retString;
 				return retString = (prodTempArray[i][0] + " "

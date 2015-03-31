@@ -13,7 +13,7 @@ public class Parts
 		PartGateway pdg = null;
 		pdg = new PartGatewaySQL();
 		
-		Dimension minimumSize = new Dimension(600,600);
+		Dimension minimumSize = new Dimension(800,800);
 		PartsModel model = new PartsModel(pdg);
 		ChooseView chView = new ChooseView(model);
 		PartsButtonController controller1 = new PartsButtonController(chView.getPartsView(), chView.getInvView(), chView.getProdTempView(), 
@@ -27,7 +27,7 @@ public class Parts
 		chView.registerViewListeners(controller1, controller2, controller4, controller3, controller5, tempListCont, tdlc);
 		
 		chView.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		chView.setSize(600, 600);
+		chView.setSize(800, 800);
 		chView.setMinimumSize(minimumSize);
 		chView.setResizable(true);
 		chView.setVisible(true);

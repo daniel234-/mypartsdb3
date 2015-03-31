@@ -48,6 +48,8 @@ public class PartsButtonController implements ActionListener
 		if(command.equalsIgnoreCase("Add Item"))
 		{
 			view2.checkInput(1);
+			view2.removePanel();
+			view2.itemPanel();
 			view2.refreshList();
 		}
 		if(command.equalsIgnoreCase("Edit Item"))
@@ -61,6 +63,13 @@ public class PartsButtonController implements ActionListener
 			String text = model.getItem(list.getSelectedIndex());
 			model.deleteItem(text);
 			view2.fieldCleanUp();
+			view2.refreshList();
+		}
+		if(command.equalsIgnoreCase("Create Product"))
+		{
+			view2.removePanel();
+			view2.fieldCleanUp();
+			view2.productPanel();
 			view2.refreshList();
 		}
 		if(command.equals("Add Template")){
