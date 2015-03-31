@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -508,5 +509,20 @@ public class InventoryView
 	}
 	public JPanel getInvPanel(){
 		return mainPanel;
+	}
+	
+	public void invalidAddPermission() {
+		JOptionPane.showMessageDialog(addButton,
+				"You do not have permission to do that");
+	}
+
+	public void invalidEditPermission() {
+		JOptionPane.showMessageDialog(editButton,
+				"You do not have permission to do that");
+	}
+
+	public void invalidDeletePermission() {
+		JOptionPane.showMessageDialog(deleteButton,
+				"You do not have permission to do that");
 	}
 }

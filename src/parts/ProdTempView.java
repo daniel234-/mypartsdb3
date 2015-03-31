@@ -11,11 +11,12 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
-public class ProdTempView extends JFrame {
+public class ProdTempView {
 	private PartsModel model;
 	private JPanel mainPanel, secondaryPanel;
 	private JButton addButton, editButton, deleteButton;
@@ -244,6 +245,25 @@ public class ProdTempView extends JFrame {
 
 	public JPanel getProdTempPanel() {
 		return this.mainPanel;
+	}
+	
+	public void invalidAddPermission() {
+		JOptionPane.showMessageDialog(addButton,
+				"You do not have permission to do that");
+	}
+
+	public void invalidEditPermission() {
+		JOptionPane.showMessageDialog(editButton,
+				"You do not have permission to do that");
+	}
+
+	public void invalidDeletePermission() {
+		JOptionPane.showMessageDialog(deleteButton,
+				"You do not have permission to do that");
+	}
+
+	public void setVisiblePanel(boolean flag){
+		mainPanel.setVisible(flag);
 	}
 
 }
