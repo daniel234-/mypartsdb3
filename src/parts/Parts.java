@@ -1,6 +1,6 @@
 package parts;
 
-//CS 4743 Assignment 4 by Daniel Gardner and Stephen Leija
+//CS 4743 Assignment 5 by Daniel Gardner and Stephen Leija
 
 import java.awt.Dimension;
 
@@ -10,9 +10,15 @@ public class Parts
 {
 	public static void main(String[] args) 
 	{
-		PartGateway pdg = null;
-		pdg = new PartGatewaySQL();
 		
+		Dimension minimumSize = new Dimension(500, 300);
+		AuthenticationView authView = new AuthenticationView();	
+		UserModel userModel = new UserModel();
+		Authenticator a = new Authenticator(userModel, authView);
+		authView.registerListeners(a);
+		
+		/*PartGateway pdg = null;
+		pdg = new PartGatewaySQL();		
 		Dimension minimumSize = new Dimension(600,600);
 		PartsModel model = new PartsModel(pdg);
 		ChooseView chView = new ChooseView(model);
@@ -30,6 +36,13 @@ public class Parts
 		chView.setSize(600, 600);
 		chView.setMinimumSize(minimumSize);
 		chView.setResizable(true);
-		chView.setVisible(true);
+		chView.setVisible(true);*/
+	
+		authView.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		authView.setSize(500, 300);
+		authView.setMinimumSize(minimumSize);
+		authView.setResizable(true);
+		authView.setVisible(true);
+	
 	}
 }
