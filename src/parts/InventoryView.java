@@ -473,33 +473,7 @@ public class InventoryView
 			{
 				return 1;
 			}
-			Scanner scan = new Scanner(this.copy);
-			String copyproductid = scan.next();
-			StringBuilder sb = new StringBuilder();
-			sb.append(scan.next());
-			while(scan.hasNext()){
-				sb.append(" ");
-				sb.append(scan.next());
-			}
-			String copydescription = sb.toString();
-			String copyitemid1 = scan.next();
-			String copyitemamount1 = scan.next();
-			String copyitemid2 = "";
-			String copyitemamount2 = "";
-			String copyitemid3 = "";
-			String copyitemamount3 = "";
-			if(scan.hasNext())
-			{
-				copyitemid2 = scan.next();
-				copyitemamount2 = scan.next();
-				if(scan.hasNext())
-				{
-					copyitemid3 = scan.next();
-					copyitemamount3 = scan.next();
-				}
-			}
-			scan.close();
-			model.addProduct(copyproductid,copydescription,copyitemid1,copyitemamount1,copyitemid2,copyitemamount2,copyitemid3,copyitemamount3,time);
+			model.addProduct(field3.getText(),field5.getText(),field7.getText(),field9.getText(),field11.getText(),field13.getText(),field15.getText(),field17.getText());
 		}
 		this.fieldCleanUp();
 		return 0;

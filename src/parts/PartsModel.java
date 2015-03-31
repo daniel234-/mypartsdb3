@@ -302,7 +302,7 @@ public class PartsModel {
 				itemArray[a][2] = this.getLocation();
 				itemArray[a][3] = amount;
 				pdg.addItemRow(itemArray[a][1], itemArray[a][2],
-						itemArray[a][3]);
+						itemArray[a][3], 0);
 				a = itemArray.length;
 				continue;
 			}
@@ -467,7 +467,7 @@ public class PartsModel {
 			{
 				if(itemArray[i][0].equalsIgnoreCase(itemid1))
 				{
-					if(Integer.parseInt(itemArray[i][3]) > Integer.parseInt(itemamount1))
+					if(Integer.parseInt(itemArray[i][3]) >= Integer.parseInt(itemamount1))
 					{
 						itemlocation = itemArray[i][2];
 						location = itemlocation;
@@ -501,7 +501,7 @@ public class PartsModel {
 					{
 						if(itemArray[i][2].equalsIgnoreCase(itemlocation))
 						{
-							if(Integer.parseInt(itemArray[i][3]) > Integer.parseInt(itemamount2))
+							if(Integer.parseInt(itemArray[i][3]) >= Integer.parseInt(itemamount2))
 							{
 								found = 1;
 							}
@@ -540,7 +540,7 @@ public class PartsModel {
 					{
 						if(itemArray[i][2].equalsIgnoreCase(itemlocation))
 						{
-							if(Integer.parseInt(itemArray[i][3]) > Integer.parseInt(itemamount3))
+							if(Integer.parseInt(itemArray[i][3]) >= Integer.parseInt(itemamount3))
 							{
 								found = 1;
 							}
@@ -568,28 +568,46 @@ public class PartsModel {
 		return 0;
 	}
 	
-	public void addProduct(String copyproductid, String copydescription, String copyitemid1, String copyitemamount1, String copyitemid2, String copyitemamount2, String copyitemid3, String copyitemamount3, Timestamp time) {
+	public void addProduct(String copyproductid, String copydescription, String copyitemid1, String copyitemamount1, String copyitemid2, String copyitemamount2, String copyitemid3, String copyitemamount3) {
 		for (int a = 0; a < itemArray.length; a++) {
 			if (itemArray[a][1] == null) {
-				itemArray[a][1] = copydescription;
-				itemArray[a][2] = this.getLocation();
-				itemArray[a][3] = "1";
-				//pdg.updateItemRow(partid, itemArray[e][1], itemArray[e][2],
-				//		itemArray[e][3], time);
-				//if(check == false)
-				//{
-				//	this.itemListFill();
-				//}
-				pdg.addItemRow(itemArray[a][1], itemArray[a][2],
-						itemArray[a][3]);
-				a = itemArray.length;
-				continue;
+				int success = 1;
+				success = useItems(copyitemid1, copyitemamount1, copyitemid2, copyitemamount2, copyitemid3, copyitemamount3, success);
+				if(success != 0)
+				{
+					itemArray[a][1] = copydescription;
+					itemArray[a][2] = this.getLocation();
+					itemArray[a][3] = "1";
+					Integer productid = Integer.parseInt(copyproductid);
+					pdg.addItemRow(itemArray[a][1], itemArray[a][2],
+							itemArray[a][3], productid);
+					a = itemArray.length;
+					continue;
+				}
 			}
-			if (itemArray[a][1].equalsIgnoreCase(copydescription)
-					&& itemArray[a][2].equalsIgnoreCase(this.getLocation())) {
-				a = itemArray.length;
-				System.out
-						.println("Similar part name/location found, add failed.");
+			if (itemArray[a][1].equalsIgnoreCase(copydescription))
+			{
+				int success = 1;
+				success = useItems(copyitemid1, copyitemamount1, copyitemid2, copyitemamount2, copyitemid3, copyitemamount3, success);
+				if(success != 0)
+				{
+					Integer itemid = Integer.parseInt(itemArray[a][0]);
+					Integer productid = Integer.parseInt(copyproductid);
+					Integer oldamount = Integer.parseInt(itemArray[a][3]);
+					Integer newamount = oldamount + 1;
+					Timestamp time = this.prepareItem(itemid);
+					itemArray[a][3] = "" + newamount;
+					boolean check = pdg.updateItemProductRow(itemid, itemArray[a][1], itemArray[a][2],
+							itemArray[a][3], time, productid);
+					if(check == false)
+					{
+						itemArray[a][3] = "" + oldamount;
+						this.itemListFill();
+						success = 0;
+					}
+					a = itemArray.length;
+					continue;
+				}
 			}
 		}
 	}
@@ -611,6 +629,66 @@ public class PartsModel {
 			return 1;
 		}
 		return 0;
+	}
+	
+	public int useItems(String id1, String amount1, String id2, String amount2, String id3, String amount3, int success)
+	{
+		for (int b = 0; b < itemArray.length; b++)
+		{
+			if(itemArray[b][0] == null)
+			{
+				return success;
+			}
+			if(itemArray[b][0].equalsIgnoreCase(id1))
+			{
+				Integer itemid = Integer.parseInt(itemArray[b][0]);
+				Integer oldamount = Integer.parseInt(itemArray[b][3]);
+				Integer newamount = oldamount - Integer.parseInt(amount1);
+				itemArray[b][3] = "" + newamount;
+				Timestamp time = this.prepareItem(itemid);
+				boolean check = pdg.updateItemRow(itemid, itemArray[b][1], itemArray[b][2],
+						itemArray[b][3], time);
+				if(check == false)
+				{
+					itemArray[b][3] = "" + oldamount;
+					this.itemListFill();
+					success = 0;
+				}
+			}
+			if(itemArray[b][0].equalsIgnoreCase(id2))
+			{
+				Integer itemid = Integer.parseInt(itemArray[b][0]);
+				Integer oldamount = Integer.parseInt(itemArray[b][3]);
+				Integer newamount = oldamount - Integer.parseInt(amount2);
+				itemArray[b][3] = "" + newamount;
+				Timestamp time = this.prepareItem(itemid);
+				boolean check = pdg.updateItemRow(itemid, itemArray[b][1], itemArray[b][2],
+						itemArray[b][3], time);
+				if(check == false)
+				{
+					itemArray[b][3] = "" + oldamount;
+					this.itemListFill();
+					success = 0;
+				}
+			}
+			if(itemArray[b][0].equalsIgnoreCase(id3))
+			{
+				Integer itemid = Integer.parseInt(itemArray[b][0]);
+				Integer oldamount = Integer.parseInt(itemArray[b][3]);
+				Integer newamount = oldamount - Integer.parseInt(amount3);
+				itemArray[b][3] = "" + newamount;
+				Timestamp time = this.prepareItem(itemid);
+				boolean check = pdg.updateItemRow(itemid, itemArray[b][1], itemArray[b][2],
+						itemArray[b][3], time);
+				if(check == false)
+				{
+					itemArray[b][3] = "" + oldamount;
+					this.itemListFill();
+					success = 0;
+				}
+			}
+		}
+		return success;
 	}
 
 	public String refreshProdTempList(int n) {
