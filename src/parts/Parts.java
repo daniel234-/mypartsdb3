@@ -1,6 +1,6 @@
 package parts;
 
-//CS 4743 Assignment 4 by Daniel Gardner and Stephen Leija
+//CS 4743 Assignment 5 by Daniel Gardner and Stephen Leija
 
 import java.awt.Dimension;
 
