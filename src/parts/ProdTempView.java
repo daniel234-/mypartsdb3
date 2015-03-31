@@ -11,11 +11,12 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
-public class ProdTempView extends JFrame {
+public class ProdTempView {
 	private PartsModel model;
 	private JPanel mainPanel, secondaryPanel;
 	private JButton addButton, editButton, deleteButton;
@@ -97,7 +98,7 @@ public class ProdTempView extends JFrame {
 		g.anchor = GridBagConstraints.PAGE_END;
 		secondaryPanel.add(templateInfo, g);
 
-		templateID = new JTextField("         Item ID: ");
+		templateID = new JTextField("         Product ID: ");
 		templateID.setHorizontalAlignment(JTextField.RIGHT);
 		templateID.setFont(bigFont);
 		templateID.setEditable(false);
@@ -212,7 +213,7 @@ public class ProdTempView extends JFrame {
 	public void refreshList() {
 		listModel.clear();
 		model.prodTempListFill();
-		for (int n = 0; n < 12; n++) {
+		for (int n = 1; n < 12; n++) {
 			String text = model.refreshProdTempList(n);
 			if (text.equalsIgnoreCase(" ")) {
 				n = 12;
@@ -244,6 +245,25 @@ public class ProdTempView extends JFrame {
 
 	public JPanel getProdTempPanel() {
 		return this.mainPanel;
+	}
+	
+	public void invalidAddPermission() {
+		JOptionPane.showMessageDialog(addButton,
+				"You do not have permission to do that");
+	}
+
+	public void invalidEditPermission() {
+		JOptionPane.showMessageDialog(editButton,
+				"You do not have permission to do that");
+	}
+
+	public void invalidDeletePermission() {
+		JOptionPane.showMessageDialog(deleteButton,
+				"You do not have permission to do that");
+	}
+
+	public void setVisiblePanel(boolean flag){
+		mainPanel.setVisible(flag);
 	}
 
 }

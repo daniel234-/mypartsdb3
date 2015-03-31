@@ -10,8 +10,9 @@ public interface PartGateway
 	public int loadProdDetail();
 	public int nextRow();
 	public Timestamp prepareItemRow(int itemid);
-	public void addItemRow(String text1, String text2, String text3);
+	public void addItemRow(String text1, String text2, String text3, int number);
 	public boolean updateItemRow(int number, String text1, String text2, String text3, Timestamp time);
+	public boolean updateItemProductRow(int number, String text1, String text2, String text3, Timestamp time, int number2);
 	public void deleteItemRow(int number);
 	public void addPartRow(String text1, String text2, String text3, String text4, String text5);
 	public void updatePartRow(int number, String text1, String text2, String text3, String text4, String text5);
